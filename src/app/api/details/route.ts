@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { fetchMediaDetails, jikanIsDown } from "@/lib/server/sources";
+import { detailsUnavailable, fetchMediaDetails } from "@/lib/server/sources";
 import type { Media, Medium } from "@/lib/types";
 
 export interface DetailsResponse {
@@ -22,9 +22,9 @@ export async function GET(req: NextRequest) {
   }
 
   const body: DetailsResponse = { items: [], failed: [], upstreamDown: false };
-  // Sequential on purpose: the shared Jikan queue does the pacing, and stopping early on outage saves requests.
+  // Sequential on purpose: the shared upstream queues do the pacing, and stopping early on outage saves requests.
   for (const id of ids) {
-    if (jikanIsDown()) {
+    if (detailsUnavailable()) {
       body.upstreamDown = true;
       body.failed.push(id);
       continue;

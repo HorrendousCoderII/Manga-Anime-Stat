@@ -1,10 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { fetchUserList, USERNAME_PATTERN } from "@/lib/server/sources";
+import { fetchUserList, USERNAME_PATTERN, type ListSource } from "@/lib/server/sources";
 import type { ListEntry, Medium } from "@/lib/types";
 
 export interface UserListsResponse {
   username: string;
   lists: Partial<Record<Medium, ListEntry[]>>;
+  listSources: Partial<Record<Medium, ListSource>>;
+  fallbackReasons: Partial<Record<Medium, string>>;
   listErrors: Partial<Record<Medium, string>>;
 }
 
@@ -27,11 +29,16 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ use
     );
   }
 
-  const body: UserListsResponse = { username, lists: {}, listErrors: {} };
+  const body: UserListsResponse = { username, lists: {}, listSources: {}, fallbackReasons: {}, listErrors: {} };
   MEDIA.forEach((medium, i) => {
     const r = results[i];
-    if (r.status === "fulfilled") body.lists[medium] = r.value;
-    else body.listErrors[medium] = r.reason instanceof Error ? r.reason.message : String(r.reason);
+    if (r.status === "fulfilled") {
+      body.lists[medium] = r.value.entries;
+      body.listSources[medium] = r.value.source;
+      if (r.value.fallbackReason) body.fallbackReasons[medium] = r.value.fallbackReason;
+    } else {
+      body.listErrors[medium] = r.reason instanceof Error ? r.reason.message : String(r.reason);
+    }
   });
   return NextResponse.json(body);
 }

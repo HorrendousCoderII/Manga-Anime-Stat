@@ -35,7 +35,7 @@ export function useUserData(username: string | null, preferred: Medium) {
     const order: Medium[] = preferredRef.current === "manga" ? ["manga", "anime"] : ["anime", "manga"];
     const queue = order.flatMap((medium) =>
       (res.lists[medium] ?? [])
-        .filter((e) => e.listStatus === "completed")
+        .filter((e) => e.listStatus === "completed" && !e.media.detailed)
         .sort((a, b) => (b.userScore ?? 0) - (a.userScore ?? 0))
         .map((e) => ({ medium, id: e.media.malId })),
     );

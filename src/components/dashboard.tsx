@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState, type FormEvent } from "react";
 import { useUserData, type EnrichmentState } from "@/hooks/use-user-data";
 import { computeKpis, type KpiSummary } from "@/lib/stats";
+import type { ListSource } from "@/lib/server/data-sources";
 import type { ListEntry, MediumMode, UserProfile } from "@/lib/types";
 import { KpiCard } from "./kpi-card";
 import { MediumSwitcher } from "./medium-switcher";
@@ -65,7 +66,7 @@ export function Dashboard() {
             </div>
             <div>
               <h1 className="text-lg font-semibold tracking-tight">Manga·Anime Stat</h1>
-              <p className="text-xs text-muted">MyAnimeList analytics, powered by Jikan</p>
+              <p className="text-xs text-muted">MyAnimeList analytics dashboard</p>
             </div>
           </div>
           <ThemeToggle />
@@ -136,6 +137,8 @@ export function Dashboard() {
               loading={loading}
               enrichment={enrichment}
               listErrors={data?.listErrors ?? {}}
+              listSources={data?.listSources ?? {}}
+              fallbackReasons={data?.fallbackReasons ?? {}}
               profileError={profileError}
             />
             <KpiGrid kpis={kpis} loading={loading} enrichment={enrichment} />
@@ -169,6 +172,8 @@ function ProfileBar({
   loading,
   enrichment,
   listErrors,
+  listSources,
+  fallbackReasons,
   profileError,
 }: {
   username: string;
@@ -177,8 +182,11 @@ function ProfileBar({
   loading: boolean;
   enrichment: EnrichmentState;
   listErrors: Record<string, string>;
+  listSources: Record<string, ListSource>;
+  fallbackReasons: Record<string, string>;
   profileError: string | null;
 }) {
+  const sources = Object.entries(listSources);
   const progress = enrichment.total ? enrichment.done / enrichment.total : 0;
   return (
     <section className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -216,22 +224,38 @@ function ProfileBar({
               {medium} list unavailable
             </Badge>
           ))}
-          {enrichment.upstreamDown || (profileError && !profileLoading && !enrichment.running) ? (
-            <Badge tone="warn" title={profileError ?? undefined}>
-              Jikan unreachable — showing list-feed data
-            </Badge>
+          {sources.length > 0 &&
+            (sources.every(([, src]) => src === "mal-api") ? (
+              <Badge tone="ok">
+                <CheckCircle2 className="size-3" />
+                MAL API v2
+              </Badge>
+            ) : (
+              <Badge tone="warn" title={Object.values(fallbackReasons).join(" · ") || undefined}>
+                Fallback: MAL list feed
+              </Badge>
+            ))}
+          {enrichment.upstreamDown ? (
+            <Badge tone="warn">Title details unavailable</Badge>
           ) : enrichment.running ? (
             <Badge tone="info">
               <Loader2 className="size-3 animate-spin" />
-              Enriching via Jikan {enrichment.done}/{enrichment.total}
+              Loading title details {enrichment.done}/{enrichment.total}
               <span className="ml-1 h-1 w-16 overflow-hidden rounded-full bg-current/15">
                 <span className="block h-full rounded-full bg-current" style={{ width: pct(progress) }} />
               </span>
             </Badge>
           ) : (
-            <Badge tone="ok">
-              <CheckCircle2 className="size-3" />
-              {enrichment.total ? `${enrichment.total} titles enriched via Jikan` : "Up to date"}
+            enrichment.total > 0 && (
+              <Badge tone="ok">
+                <CheckCircle2 className="size-3" />
+                {enrichment.total} titles enriched
+              </Badge>
+            )
+          )}
+          {profileError && !profileLoading && (
+            <Badge tone="warn" title={profileError}>
+              Profile stats unavailable (Jikan)
             </Badge>
           )}
         </div>
@@ -278,7 +302,7 @@ function KpiGrid({ kpis, loading, enrichment }: { kpis: KpiSummary | null; loadi
     <div className="flex items-baseline justify-between gap-2">
       <span className="text-muted">{label}</span>
       <span className="truncate font-medium text-foreground">
-        {credit ? `${credit.name} · ${credit.count}` : enrichment.upstreamDown ? "Needs Jikan" : enrichment.running ? "Loading…" : "—"}
+        {credit ? `${credit.name} · ${credit.count}` : enrichment.upstreamDown ? "Unavailable" : enrichment.running ? "Loading…" : "—"}
       </span>
     </div>
   );
