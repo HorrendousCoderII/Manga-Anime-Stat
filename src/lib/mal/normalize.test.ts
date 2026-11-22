@@ -32,6 +32,19 @@ describe("splitMalGenres", () => {
     expect(split.demographics.map((t) => t.name)).toEqual(["Shounen", "Seinen"]);
   });
 
+  it("drops promotional tags that are not genres", () => {
+    const split = splitMalGenres([
+      { id: 22, name: "Romance" },
+      { id: 84, name: "Eligible Titles for You Should Read This" },
+      { id: 25, name: "Shoujo" },
+    ]);
+    expect(split).toEqual({
+      genres: [{ id: 22, name: "Romance" }],
+      themes: [],
+      demographics: [{ id: 25, name: "Shoujo" }],
+    });
+  });
+
   it("handles a missing list", () => {
     expect(splitMalGenres(undefined)).toEqual({ genres: [], themes: [], demographics: [] });
   });

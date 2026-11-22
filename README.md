@@ -28,7 +28,7 @@ The fallback is used when `MAL_CLIENT_ID` is unset or the MAL API request fails.
 
 With the MAL API, list rows already include studios, runtimes and authors, so anime needs no extra per-title requests. Manga rows lack magazines (see quirks below) and feed rows lack all of these, so the browser enriches completed titles through `/api/details`, which tries MAL first and then Jikan.
 
-MAL returns genres, themes and demographics in one `genres` list. `src/lib/mal/genres.ts` splits them by name, because MAL's numeric IDs differ between anime and manga.
+MAL returns genres, themes and demographics in one `genres` list. `src/lib/mal/genres.ts` splits them by name, because MAL's numeric IDs differ between anime and manga. It also drops promotional tags MAL mixes into that list (e.g. "Eligible Titles for You Should Read This").
 
 All upstream calls run server-side through `ThrottledClient` (`src/lib/http/client.ts`), which layers these steps:
 
