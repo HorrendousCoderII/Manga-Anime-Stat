@@ -8,6 +8,7 @@ import {
   normalizeMalApiMangaEntry,
   normalizeMalAuthorRole,
   normalizeMalDate,
+  normalizeMalManga,
 } from "./normalize";
 import type { MalAnimeListStatus, MalAnimeNode, MalMangaListStatus, MalMangaNode } from "./raw";
 
@@ -104,7 +105,7 @@ describe("normalizeMalApiAnimeEntry", () => {
 });
 
 describe("normalizeMalApiMangaEntry", () => {
-  it("maps manga-specific fields including author roles and serialization", () => {
+  it("maps manga-specific fields including author roles", () => {
     const e = manga(0);
     expect(e).toMatchObject({ listStatus: "in_progress", userScore: 9, progress: { chapters: 364, volumes: 41, episodes: 0 } });
     expect(e.media).toMatchObject({
@@ -114,14 +115,29 @@ describe("normalizeMalApiMangaEntry", () => {
       chapters: null,
       volumes: null,
       year: 1989,
-      detailed: true,
     });
     expect(e.media.authors).toEqual([
       { id: 1868, name: "Kentarou Miura", role: "story_and_art" },
       { id: 49592, name: "Studio Gaga", role: "art" },
     ]);
-    expect(e.media.serializations).toEqual([{ id: 2, name: "Young Animal" }]);
     expect(e.media.themes.map((t) => t.name)).toEqual(["Gore", "Mythology"]);
     expect(e.media.demographics.map((t) => t.name)).toEqual(["Seinen"]);
+  });
+
+  it("leaves list entries without serialization undetailed so magazines get enriched", () => {
+    const e = manga(0);
+    expect(e.media.serializations).toEqual([]);
+    expect(e.media.detailed).toBe(false);
+  });
+
+  it("keeps serialization when the node includes it", () => {
+    const node = {
+      ...(mangaList.data[0].node as MalMangaNode),
+      serialization: [{ node: { id: 2, name: "Young Animal" } }],
+    };
+    const e = normalizeMalApiMangaEntry(node);
+    expect(e.media.serializations).toEqual([{ id: 2, name: "Young Animal" }]);
+    expect(e.media.detailed).toBe(true);
+    expect(normalizeMalManga(node).serializations).toEqual([{ id: 2, name: "Young Animal" }]);
   });
 });
