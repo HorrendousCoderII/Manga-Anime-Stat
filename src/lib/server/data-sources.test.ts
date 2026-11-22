@@ -53,7 +53,7 @@ describe("fetchUserList", () => {
     expect(result.source).toBe("mal-api");
     expect(result.fallbackReason).toBeUndefined();
     expect(result.entries).toHaveLength(4);
-    expect(result.entries[0].media.studios[0].name).toBe("Sunrise");
+    expect(result.entries[0].media).toMatchObject({ studios: [{ name: "Sunrise" }] });
 
     expect(calls).toHaveLength(2);
     const first = calls[0];
