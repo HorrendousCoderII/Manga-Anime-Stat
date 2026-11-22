@@ -1,0 +1,29 @@
+{
+  "mal_id": 2,
+  "url": "https://myanimelist.net/manga/2/Berserk",
+  "images": {
+    "jpg": {
+      "image_url": "https://cdn.myanimelist.net/images/manga/1/157897.jpg",
+      "large_image_url": "https://cdn.myanimelist.net/images/manga/1/157897l.jpg"
+    }
+  },
+  "titles": [{ "type": "Default", "title": "Berserk" }, { "type": "English", "title": "Berserk" }],
+  "title": "Berserk",
+  "type": "Manga",
+  "chapters": null,
+  "volumes": null,
+  "status": "Publishing",
+  "publishing": true,
+  "published": { "from": "1989-08-25T00:00:00+00:00", "to": null },
+  "score": 9.47,
+  "scored_by": 361000,
+  "rank": 1,
+  "popularity": 1,
+  "members": 750000,
+  "authors": [{ "mal_id": 1868, "type": "people", "name": "Miura, Kentarou", "url": "" }, { "mal_id": 49592, "type": "people", "name": "Studio Gaga", "url": "" }],
+  "serializations": [{ "mal_id": 2, "type": "manga", "name": "Young Animal", "url": "" }],
+  "genres": [{ "mal_id": 1, "type": "manga", "name": "Action", "url": "" }, { "mal_id": 8, "type": "manga", "name": "Drama", "url": "" }],
+  "explicit_genres": [],
+  "themes": [{ "mal_id": 58, "type": "manga", "name": "Gore", "url": "" }],
+  "demographics": [{ "mal_id": 42, "type": "manga", "name": "Seinen", "url": "" }]
+}

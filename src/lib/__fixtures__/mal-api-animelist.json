@@ -1,0 +1,66 @@
+{
+  "data": [
+    {
+      "node": {
+        "id": 1,
+        "title": "Cowboy Bebop",
+        "main_picture": {
+          "medium": "https://cdn.myanimelist.net/images/anime/4/19644.jpg",
+          "large": "https://cdn.myanimelist.net/images/anime/4/19644l.jpg"
+        },
+        "alternative_titles": { "synonyms": [], "en": "Cowboy Bebop", "ja": "カウボーイビバップ" },
+        "start_date": "1998-04-03",
+        "end_date": "1999-04-24",
+        "mean": 8.75,
+        "rank": 46,
+        "popularity": 43,
+        "num_list_users": 1988211,
+        "num_scoring_users": 1009341,
+        "media_type": "tv",
+        "status": "finished_airing",
+        "genres": [
+          { "id": 1, "name": "Action" },
+          { "id": 50, "name": "Adult Cast" },
+          { "id": 46, "name": "Award Winning" },
+          { "id": 24, "name": "Sci-Fi" },
+          { "id": 29, "name": "Space" }
+        ],
+        "num_episodes": 26,
+        "start_season": { "year": 1998, "season": "spring" },
+        "source": "original",
+        "average_episode_duration": 1440,
+        "studios": [{ "id": 14, "name": "Sunrise" }]
+      },
+      "list_status": {
+        "status": "completed",
+        "score": 10,
+        "num_episodes_watched": 26,
+        "is_rewatching": false,
+        "updated_at": "2021-04-19T21:44:42+00:00"
+      }
+    },
+    {
+      "node": {
+        "id": 21,
+        "title": "One Piece",
+        "main_picture": { "medium": "https://cdn.myanimelist.net/images/anime/1244/138851.jpg" },
+        "start_date": "1999-10",
+        "mean": 8.72,
+        "media_type": "tv",
+        "status": "currently_airing",
+        "genres": [
+          { "id": 1, "name": "Action" },
+          { "id": 2, "name": "Adventure" },
+          { "id": 10, "name": "Fantasy" },
+          { "id": 27, "name": "Shounen" }
+        ],
+        "num_episodes": 0,
+        "source": "manga",
+        "average_episode_duration": 1440,
+        "studios": [{ "id": 18, "name": "Toei Animation" }]
+      },
+      "list_status": { "status": "watching", "score": 0, "num_episodes_watched": 623, "is_rewatching": false }
+    }
+  ],
+  "paging": {}
+}

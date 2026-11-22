@@ -1,0 +1,47 @@
+{
+  "data": [
+    {
+      "node": {
+        "id": 2,
+        "title": "Berserk",
+        "main_picture": {
+          "medium": "https://cdn.myanimelist.net/images/manga/1/157897.jpg",
+          "large": "https://cdn.myanimelist.net/images/manga/1/157897l.jpg"
+        },
+        "alternative_titles": { "synonyms": [], "en": "Berserk", "ja": "ベルセルク" },
+        "start_date": "1989-08-25",
+        "mean": 9.47,
+        "rank": 1,
+        "popularity": 1,
+        "num_list_users": 750000,
+        "num_scoring_users": 361000,
+        "media_type": "manga",
+        "status": "on_hiatus",
+        "genres": [
+          { "id": 1, "name": "Action" },
+          { "id": 2, "name": "Adventure" },
+          { "id": 8, "name": "Drama" },
+          { "id": 58, "name": "Gore" },
+          { "id": 6, "name": "Mythology" },
+          { "id": 41, "name": "Seinen" }
+        ],
+        "num_volumes": 0,
+        "num_chapters": 0,
+        "authors": [
+          { "node": { "id": 1868, "first_name": "Kentarou", "last_name": "Miura" }, "role": "Story & Art" },
+          { "node": { "id": 49592, "first_name": "", "last_name": "Studio Gaga" }, "role": "Art" }
+        ],
+        "serialization": [{ "node": { "id": 2, "name": "Young Animal" } }]
+      },
+      "list_status": {
+        "status": "reading",
+        "score": 9,
+        "num_volumes_read": 41,
+        "num_chapters_read": 364,
+        "is_rereading": false,
+        "updated_at": "2024-01-02T03:04:05+00:00"
+      }
+    }
+  ],
+  "paging": {}
+}

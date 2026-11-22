@@ -1,0 +1,119 @@
+[
+  {
+    "status": 1,
+    "score": 9,
+    "tags": "action, adventure, pirates, comedy",
+    "is_rewatching": 0,
+    "num_watched_episodes": 623,
+    "created_at": 0,
+    "updated_at": 1618868682,
+    "anime_title": "One Piece",
+    "anime_title_eng": "One Piece",
+    "anime_num_episodes": 0,
+    "anime_airing_status": 1,
+    "anime_id": 21,
+    "anime_studios": null,
+    "anime_licensors": null,
+    "anime_season": null,
+    "anime_total_members": 2748341,
+    "anime_total_scores": 1569280,
+    "anime_score_val": 8.72,
+    "anime_score_diff": 0.28,
+    "anime_popularity": 17,
+    "has_episode_video": true,
+    "has_promotion_video": true,
+    "has_video": true,
+    "video_url": "/anime/21/One_Piece/video",
+    "genres": [
+      {
+        "id": 1,
+        "name": "Action"
+      },
+      {
+        "id": 2,
+        "name": "Adventure"
+      },
+      {
+        "id": 10,
+        "name": "Fantasy"
+      }
+    ],
+    "demographics": [
+      {
+        "id": 27,
+        "name": "Shounen"
+      }
+    ],
+    "title_localized": null,
+    "anime_url": "/anime/21/One_Piece",
+    "anime_image_path": "https://cdn.myanimelist.net/r/192x272/images/anime/1244/138851.jpg?s=efa0bb34987933dc15f7869a6049838d",
+    "is_added_to_list": false,
+    "anime_media_type_string": "TV",
+    "anime_mpaa_rating_string": "PG-13",
+    "start_date_string": "09-21-03",
+    "finish_date_string": null,
+    "anime_start_date_string": "10-20-99",
+    "anime_end_date_string": null,
+    "days_string": 8464,
+    "storage_string": "HD 0.0 Gb",
+    "priority_string": "Low",
+    "notes": "",
+    "editable_notes": ""
+  },
+  {
+    "status": 2,
+    "score": 7,
+    "tags": "fantasy, adventure",
+    "is_rewatching": 0,
+    "num_watched_episodes": 26,
+    "created_at": 0,
+    "updated_at": 1173289779,
+    "anime_title": ".hack//Sign",
+    "anime_title_eng": ".hack//Sign",
+    "anime_num_episodes": 26,
+    "anime_airing_status": 2,
+    "anime_id": 48,
+    "anime_studios": null,
+    "anime_licensors": null,
+    "anime_season": null,
+    "anime_total_members": 197491,
+    "anime_total_scores": 88348,
+    "anime_score_val": 6.95,
+    "anime_score_diff": 0.05,
+    "anime_popularity": 1451,
+    "has_episode_video": false,
+    "has_promotion_video": true,
+    "has_video": true,
+    "video_url": "/anime/48/hack__Sign/video",
+    "genres": [
+      {
+        "id": 2,
+        "name": "Adventure"
+      },
+      {
+        "id": 10,
+        "name": "Fantasy"
+      },
+      {
+        "id": 7,
+        "name": "Mystery"
+      }
+    ],
+    "demographics": [],
+    "title_localized": null,
+    "anime_url": "/anime/48/hack__Sign",
+    "anime_image_path": "https://cdn.myanimelist.net/r/192x272/images/anime/1443/94665.jpg?s=119e8206049285586560610ddf7363ab",
+    "is_added_to_list": false,
+    "anime_media_type_string": "TV",
+    "anime_mpaa_rating_string": "PG-13",
+    "start_date_string": "10-18-02",
+    "finish_date_string": "10-27-02",
+    "anime_start_date_string": "04-04-02",
+    "anime_end_date_string": "09-26-02",
+    "days_string": 10,
+    "storage_string": "",
+    "priority_string": "Low",
+    "notes": "",
+    "editable_notes": ""
+  }
+]
