@@ -136,7 +136,9 @@ export function normalizeMalApiAnimeEntry(node: MalAnimeNode, status: MalAnimeLi
 
 export function normalizeMalApiMangaEntry(node: MalMangaNode, status: MalMangaListStatus = {}): ListEntry<Manga> {
   return {
-    media: normalizeMalManga(node),
+    // The list endpoint ignores `serialization` even when requested; leave the entry
+    // undetailed so the per-title details endpoint fills in magazines.
+    media: { ...normalizeMalManga(node), detailed: node.serialization !== undefined },
     listStatus: (status.status && LIST_STATUS[status.status]) || "planned",
     userScore: positiveOrNull(status.score),
     progress: { episodes: 0, chapters: status.num_chapters_read ?? 0, volumes: status.num_volumes_read ?? 0 },

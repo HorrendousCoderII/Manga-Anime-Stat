@@ -26,9 +26,9 @@ npm run typecheck && npm run lint
 
 The fallback is used when `MAL_CLIENT_ID` is unset or the MAL API request fails. The dashboard shows which list source was used.
 
-With the MAL API, list rows already include studios, runtimes, authors and serialization, so no extra per-title requests are needed. Feed rows lack these, so the browser enriches completed titles through `/api/details`, which tries MAL first and then Jikan.
+With the MAL API, list rows already include studios, runtimes and authors, so anime needs no extra per-title requests. Manga rows lack magazines (see quirks below) and feed rows lack all of these, so the browser enriches completed titles through `/api/details`, which tries MAL first and then Jikan.
 
-MAL returns genres, themes and demographics in one `genres` list. `src/lib/mal/genres.ts` splits them by name, because MAL's numeric IDs differ between anime and manga.
+MAL returns genres, themes and demographics in one `genres` list. `src/lib/mal/genres.ts` splits them by name, because MAL's numeric IDs differ between anime and manga. It also drops promotional tags MAL mixes into that list (e.g. "Eligible Titles for You Should Read This").
 
 All upstream calls run server-side through `ThrottledClient` (`src/lib/http/client.ts`), which layers these steps:
 
@@ -43,6 +43,7 @@ Raw payloads are normalized into the unified `Anime` / `Manga` / `ListEntry` typ
 ## Known upstream quirks
 
 - MAL API list endpoints leave out NSFW titles unless you pass `nsfw=true`, which the client always does.
+- The MAL API manga list endpoint silently drops `serialization` even when requested; only `/manga/{id}` returns it. Magazines therefore fill in as completed manga are enriched.
 - MAL API counts of `0` (episodes, chapters, volumes) mean unknown or ongoing. Dates can be partial (`"2017"` or `"2017-10"`).
 - MAL returns 403 when no client ID is sent, and 400 `Invalid client id` for a bad one. Either one triggers the fallback.
 - Jikan's manga `authors` do not say whether a credit is for story or art, so `Author.role` is `"unknown"` on the Jikan path. The MAL API provides real roles.

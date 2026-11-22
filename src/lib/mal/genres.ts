@@ -64,6 +64,9 @@ export const MAL_THEMES: ReadonlySet<string> = new Set([
   "Workplace",
 ]);
 
+/** Promotional or editorial tags MAL mixes into `genres`; they describe no content, so they are dropped. */
+export const MAL_IGNORED_TAGS: ReadonlySet<string> = new Set(["Eligible Titles for You Should Read This"]);
+
 export function splitMalGenres(tags: readonly Tag[] | undefined): {
   genres: Tag[];
   themes: Tag[];
@@ -71,6 +74,7 @@ export function splitMalGenres(tags: readonly Tag[] | undefined): {
 } {
   const out = { genres: [] as Tag[], themes: [] as Tag[], demographics: [] as Tag[] };
   for (const { id, name } of tags ?? []) {
+    if (MAL_IGNORED_TAGS.has(name)) continue;
     const bucket = MAL_DEMOGRAPHICS.has(name) ? out.demographics : MAL_THEMES.has(name) ? out.themes : out.genres;
     bucket.push({ id, name });
   }

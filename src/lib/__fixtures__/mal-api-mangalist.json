@@ -30,8 +30,7 @@
         "authors": [
           { "node": { "id": 1868, "first_name": "Kentarou", "last_name": "Miura" }, "role": "Story & Art" },
           { "node": { "id": 49592, "first_name": "", "last_name": "Studio Gaga" }, "role": "Art" }
-        ],
-        "serialization": [{ "node": { "id": 2, "name": "Young Animal" } }]
+        ]
       },
       "list_status": {
         "status": "reading",
