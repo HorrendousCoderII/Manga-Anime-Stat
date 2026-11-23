@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { ALL_STATUSES, applyFilters, DEFAULT_FILTERS, scopeEntries, yearExtent, type ChartFilters } from "@/lib/analytics/filters";
 import type { ListEntry, ListStatus, MediumMode } from "@/lib/types";
+import { AdaptationGap } from "./adaptation-gap";
 import { ChartFiltersBar } from "./chart-filters";
 import { CreditComparison } from "./credit-comparison";
 import { ScoreScatter } from "./score-scatter";
@@ -35,6 +36,7 @@ export function Insights({ entries, mode }: { entries: ListEntry[]; mode: Medium
       <ScoreScatter entries={filtered} mode={mode} />
       <TagBreakdown entries={filtered} mode={mode} />
       <CreditComparison key={mode} entries={filtered} mode={mode} />
+      <AdaptationGap entries={entries} filtered={filtered} mode={mode} />
     </div>
   );
 }

@@ -28,6 +28,12 @@ interface MalNodeBase {
   genres?: MalNamed[];
 }
 
+export interface MalRelatedNode {
+  node: { id: number; title: string; main_picture?: MalPicture };
+  relation_type: string;
+  relation_type_formatted?: string;
+}
+
 export interface MalAnimeNode extends MalNodeBase {
   num_episodes?: number;
   start_season?: { year: number; season: string };
@@ -35,6 +41,8 @@ export interface MalAnimeNode extends MalNodeBase {
   /** Seconds. */
   average_episode_duration?: number;
   studios?: MalNamed[];
+  related_anime?: MalRelatedNode[];
+  related_manga?: MalRelatedNode[];
 }
 
 export interface MalMangaNode extends MalNodeBase {
@@ -42,6 +50,8 @@ export interface MalMangaNode extends MalNodeBase {
   num_chapters?: number;
   authors?: { node: { id: number; first_name?: string; last_name?: string }; role?: string }[];
   serialization?: { node: MalNamed; role?: string }[];
+  related_anime?: MalRelatedNode[];
+  related_manga?: MalRelatedNode[];
 }
 
 export interface MalAnimeListStatus {
