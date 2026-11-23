@@ -9,6 +9,7 @@ import { useUserData, type EnrichmentState } from "@/hooks/use-user-data";
 import { computeKpis, type KpiSummary } from "@/lib/stats";
 import type { ListSource } from "@/lib/server/data-sources";
 import type { ListEntry, MediumMode, UserProfile } from "@/lib/types";
+import { Insights } from "./insights/insights";
 import { KpiCard } from "./kpi-card";
 import { MediumSwitcher } from "./medium-switcher";
 import { ThemeToggle } from "./theme-toggle";
@@ -143,6 +144,7 @@ export function Dashboard() {
             />
             <KpiGrid kpis={kpis} loading={loading} enrichment={enrichment} />
             {kpis && <TopRated entries={entries} mode={mode} />}
+            {kpis && <Insights key={username} entries={entries} mode={mode} />}
           </>
         )}
       </div>
