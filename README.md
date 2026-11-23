@@ -2,7 +2,7 @@
 
 Manga and Anime stat visualizer: an analytics dashboard for public MyAnimeList profiles.
 
-Currently implements Milestones 1–2 of the dashboard spec: the rate-limited data layer and the dashboard shell with KPI cards.
+Currently implements Milestones 1–3 of the dashboard spec: the rate-limited data layer, the dashboard shell with KPI cards, and the interactive charts (taste scatter, genre breakdown, studio/magazine comparison) with release-year, length and status filters.
 
 ## Running
 
@@ -38,7 +38,7 @@ All upstream calls run server-side through `ThrottledClient` (`src/lib/http/clie
 4. **Exponential backoff** on `429` (`src/lib/http/backoff.ts`), honouring `Retry-After`. A 429 also pauses the shared queue.
 5. **Circuit breaker**: after repeated network failures the client fails fast for 60 s, so an outage doesn't stall the page.
 
-Raw payloads are normalized into the unified `Anime` / `Manga` / `ListEntry` types in `src/lib/types.ts` by `src/lib/mal/normalize.ts` (MAL API v2) and `src/lib/normalize.ts` (Jikan and the list feed). The KPIs come from `computeKpis` in `src/lib/stats.ts`.
+Raw payloads are normalized into the unified `Anime` / `Manga` / `ListEntry` types in `src/lib/types.ts` by `src/lib/mal/normalize.ts` (MAL API v2) and `src/lib/normalize.ts` (Jikan and the list feed). The KPIs come from `computeKpis` in `src/lib/stats.ts`. Chart aggregations (score bias, tag breakdown, studio/magazine stats, filters) live in `src/lib/analytics/` and are rendered with Recharts.
 
 ## Known upstream quirks
 
