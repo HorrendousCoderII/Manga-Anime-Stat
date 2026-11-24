@@ -1,13 +1,29 @@
+import type { RelatedLink } from "../analytics/adaptation-gap";
 import { isHttpError } from "../http/backoff";
 import type { ThrottledClient } from "../http/client";
-import type { JikanAnime, JikanManga, JikanResource, JikanUserFull, MalAnimeListEntry, MalMangaListEntry } from "../jikan/raw";
+import type {
+  JikanAnime,
+  JikanManga,
+  JikanRelationGroup,
+  JikanResource,
+  JikanUserFull,
+  MalAnimeListEntry,
+  MalMangaListEntry,
+} from "../jikan/raw";
 import {
   normalizeMalAnime,
   normalizeMalApiAnimeEntry,
   normalizeMalApiMangaEntry,
   normalizeMalManga,
 } from "../mal/normalize";
-import type { MalAnimeListStatus, MalAnimeNode, MalListPage, MalMangaListStatus, MalMangaNode } from "../mal/raw";
+import type {
+  MalAnimeListStatus,
+  MalAnimeNode,
+  MalListPage,
+  MalMangaListStatus,
+  MalMangaNode,
+  MalRelatedNode,
+} from "../mal/raw";
 import {
   normalizeJikanAnime,
   normalizeJikanManga,
@@ -51,11 +67,21 @@ export const MAL_MANGA_FIELDS = [
 ].join(",");
 
 export type ListSource = "mal-api" | "mal-feed";
+export type RelationSource = "mal-api" | "jikan";
 
 export interface UserListResult {
   entries: ListEntry[];
   source: ListSource;
   /** Why the primary MAL API source was skipped, when it was. */
+  fallbackReason?: string;
+}
+
+export interface RelationsResult {
+  medium: Medium;
+  malId: number;
+  related: RelatedLink[];
+  source: RelationSource;
+  /** Set when MAL returned no cross-medium links and Jikan was used (or attempted). */
   fallbackReason?: string;
 }
 
@@ -191,5 +217,84 @@ export function createDataSources({ malApi, malFeed, jikan }: SourceClients) {
   /** True when no source can currently serve title details. */
   const detailsUnavailable = () => (!malApi || malApi.isCircuitOpen) && jikan.isCircuitOpen;
 
-  return { fetchUserList, fetchUserProfile, fetchMediaDetails, detailsUnavailable };
+  function fromMalRelated(rows: MalRelatedNode[] | undefined, medium: Medium): RelatedLink[] {
+    if (!rows?.length) return [];
+    return rows.map((r) => ({
+      medium,
+      malId: r.node.id,
+      title: r.node.title,
+      relation: r.relation_type_formatted || r.relation_type,
+    }));
+  }
+
+  function fromJikanRelations(groups: JikanRelationGroup[]): RelatedLink[] {
+    const out: RelatedLink[] = [];
+    for (const g of groups) {
+      for (const e of g.entry ?? []) {
+        const type = (e.type ?? "").toLowerCase();
+        if (type !== "anime" && type !== "manga") continue;
+        out.push({ medium: type, malId: e.mal_id, title: e.name, relation: g.relation });
+      }
+    }
+    return out;
+  }
+
+  function crossMedium(related: RelatedLink[], self: Medium): RelatedLink[] {
+    return related.filter((r) => r.medium !== self);
+  }
+
+  /**
+   * Cross-medium related titles for adaptation pairing.
+   * Prefers MAL v2 `related_anime` / `related_manga`; falls back to Jikan `/relations`
+   * (MAL's cross-medium fields are often empty — a known API bug).
+   */
+  async function fetchRelations(medium: Medium, malId: number): Promise<RelationsResult> {
+    let fallbackReason: string | undefined;
+
+    if (malApi && !malApi.isCircuitOpen) {
+      try {
+        const node = await malApi.get<MalAnimeNode | MalMangaNode>(`/${medium}/${malId}`, {
+          params: { fields: "related_anime,related_manga" },
+          ttlMs: 7 * DAY,
+        });
+        const related = [
+          ...fromMalRelated(node.related_anime, "anime"),
+          ...fromMalRelated(node.related_manga, "manga"),
+        ];
+        const cross = crossMedium(related, medium);
+        if (cross.length) return { medium, malId, related: cross, source: "mal-api" };
+        fallbackReason = "MAL returned no cross-medium related titles";
+      } catch (err) {
+        if (isHttpError(err) && err.status === 404) throw err;
+        fallbackReason = `MAL relations failed: ${errorMessage(err)}`;
+      }
+    } else {
+      fallbackReason = malApi ? "MAL circuit open" : "MAL_CLIENT_ID not set";
+    }
+
+    if (!jikan.isCircuitOpen) {
+      try {
+        const res = await jikan.get<JikanResource<JikanRelationGroup[]>>(`/${medium}/${malId}/relations`, {
+          ttlMs: 7 * DAY,
+        });
+        return {
+          medium,
+          malId,
+          related: crossMedium(fromJikanRelations(res.data ?? []), medium),
+          source: "jikan",
+          fallbackReason,
+        };
+      } catch (err) {
+        if (isHttpError(err) && err.status === 404) throw err;
+        fallbackReason = `${fallbackReason ?? "relations unavailable"}; Jikan failed: ${errorMessage(err)}`;
+      }
+    } else {
+      fallbackReason = `${fallbackReason ?? "relations unavailable"}; Jikan circuit open`;
+    }
+
+    // Both sources empty/unavailable — callers can still pair via on-list title matching.
+    return { medium, malId, related: [], source: "jikan", fallbackReason };
+  }
+
+  return { fetchUserList, fetchUserProfile, fetchMediaDetails, fetchRelations, detailsUnavailable };
 }

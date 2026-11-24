@@ -61,6 +61,12 @@ export interface JikanResource<T> {
   data: T;
 }
 
+/** `/anime|manga/{id}/relations` group. */
+export interface JikanRelationGroup {
+  relation: string;
+  entry: { mal_id: number; type: string; name: string; url: string }[];
+}
+
 export interface JikanUserFull {
   mal_id: number | null;
   username: string;

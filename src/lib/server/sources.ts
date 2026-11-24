@@ -5,7 +5,7 @@ import { ThrottledClient } from "../http/client";
 import { RateLimiter } from "../http/rate-limiter";
 import { createDataSources } from "./data-sources";
 
-export { UserListError, type ListSource, type UserListResult } from "./data-sources";
+export { UserListError, type ListSource, type RelationSource, type RelationsResult, type UserListResult } from "./data-sources";
 
 const MINUTE = 60_000;
 const USER_AGENT = "Manga-Anime-Stat/0.1 (+https://github.com/HorrendousCoderII/Manga-Anime-Stat)";
@@ -60,4 +60,5 @@ export const USERNAME_PATTERN = /^[A-Za-z0-9_-]{2,16}$/;
 export const fetchUserList: DataSources["fetchUserList"] = (...args) => sources().fetchUserList(...args);
 export const fetchUserProfile: DataSources["fetchUserProfile"] = (...args) => sources().fetchUserProfile(...args);
 export const fetchMediaDetails: DataSources["fetchMediaDetails"] = (...args) => sources().fetchMediaDetails(...args);
+export const fetchRelations: DataSources["fetchRelations"] = (...args) => sources().fetchRelations(...args);
 export const detailsUnavailable = () => sources().detailsUnavailable();

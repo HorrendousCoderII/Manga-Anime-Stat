@@ -132,3 +132,65 @@ describe("fetchMediaDetails", () => {
     expect(sources.detailsUnavailable()).toBe(true);
   });
 });
+
+describe("fetchRelations", () => {
+  it("returns MAL cross-medium related titles when present", async () => {
+    const { sources, calls } = setup({
+      malApi: () =>
+        json({
+          id: 1535,
+          title: "Death Note",
+          related_anime: [{ node: { id: 2994, title: "Rewrite" }, relation_type: "summary" }],
+          related_manga: [{ node: { id: 21, title: "Death Note" }, relation_type: "adaptation", relation_type_formatted: "Adaptation" }],
+        }),
+    });
+    const result = await sources.fetchRelations("anime", 1535);
+    expect(result).toMatchObject({ source: "mal-api", malId: 1535 });
+    expect(result.related).toEqual([{ medium: "manga", malId: 21, title: "Death Note", relation: "Adaptation" }]);
+    expect(calls[0].url.searchParams.get("fields")).toBe("related_anime,related_manga");
+  });
+
+  it("falls back to Jikan when MAL has no cross-medium links", async () => {
+    const { sources, calls } = setup({
+      malApi: () => json({ id: 1535, title: "Death Note", related_anime: [], related_manga: [] }),
+      jikan: () =>
+        json({
+          data: [
+            { relation: "Adaptation", entry: [{ mal_id: 21, type: "manga", name: "Death Note", url: "" }] },
+            { relation: "Summary", entry: [{ mal_id: 2994, type: "anime", name: "Rewrite", url: "" }] },
+          ],
+        }),
+    });
+    const result = await sources.fetchRelations("anime", 1535);
+    expect(result.source).toBe("jikan");
+    expect(result.fallbackReason).toMatch(/no cross-medium/i);
+    expect(result.related).toEqual([{ medium: "manga", malId: 21, title: "Death Note", relation: "Adaptation" }]);
+    expect(calls.map((c) => c.client)).toEqual(["mal-api", "jikan"]);
+    expect(calls[1].url.pathname).toBe("/v4/anime/1535/relations");
+  });
+
+  it("uses Jikan directly when no MAL client is configured", async () => {
+    const { sources, calls } = setup({
+      jikan: () =>
+        json({
+          data: [{ relation: "Adaptation", entry: [{ mal_id: 1535, type: "anime", name: "Death Note", url: "" }] }],
+        }),
+    });
+    const result = await sources.fetchRelations("manga", 21);
+    expect(result).toMatchObject({ source: "jikan", fallbackReason: "MAL_CLIENT_ID not set" });
+    expect(result.related).toEqual([{ medium: "anime", malId: 1535, title: "Death Note", relation: "Adaptation" }]);
+    expect(calls.map((c) => c.client)).toEqual(["jikan"]);
+  });
+
+  it("returns an empty related list when Jikan is also unreachable", async () => {
+    const { sources } = setup({
+      malApi: () => json({ id: 1, title: "X", related_anime: [], related_manga: [] }),
+      jikan: () => {
+        throw new TypeError("fetch failed");
+      },
+    });
+    const result = await sources.fetchRelations("anime", 1);
+    expect(result.related).toEqual([]);
+    expect(result.fallbackReason).toMatch(/Jikan failed/i);
+  });
+});

@@ -2,7 +2,7 @@
 
 Manga and Anime stat visualizer: an analytics dashboard for public MyAnimeList profiles.
 
-Currently implements Milestones 1–3 of the dashboard spec: the rate-limited data layer, the dashboard shell with KPI cards, and the interactive charts (taste scatter, genre breakdown, studio/magazine comparison) with release-year, length and status filters.
+Currently implements Milestones 1–4 of the dashboard spec: the rate-limited data layer, KPI shell, interactive charts (taste scatter, genre breakdown, studio/magazine comparison), and the **Manga vs Anime Adaptation Gap Analyzer**.
 
 ## Running
 
@@ -22,6 +22,7 @@ npm run typecheck && npm run lint
 | --- | --- | --- | --- |
 | User anime/manga lists | MAL API v2 `/users/{user}/{anime,manga}list` with `list_status` and nested title fields, 1000 rows/page | MAL public list feed `/{anime,manga}list/{user}/load.json` | 15 min |
 | Title details | MAL API v2 `/{anime,manga}/{id}` | Jikan v4 `/{anime,manga}/{id}` | 7 days |
+| Cross-medium relations (adaptation pairing) | MAL API v2 `related_anime` / `related_manga` | Jikan v4 `/{anime,manga}/{id}/relations` | 7 days |
 | Profile + statistics (watch days) | Jikan v4 `/users/{user}/full` | none (MAL v2 has no public profile endpoint) | 1 h |
 
 The fallback is used when `MAL_CLIENT_ID` is unset or the MAL API request fails. The dashboard shows which list source was used.
@@ -39,6 +40,15 @@ All upstream calls run server-side through `ThrottledClient` (`src/lib/http/clie
 5. **Circuit breaker**: after repeated network failures the client fails fast for 60 s, so an outage doesn't stall the page.
 
 Raw payloads are normalized into the unified `Anime` / `Manga` / `ListEntry` types in `src/lib/types.ts` by `src/lib/mal/normalize.ts` (MAL API v2) and `src/lib/normalize.ts` (Jikan and the list feed). The KPIs come from `computeKpis` in `src/lib/stats.ts`. Chart aggregations (score bias, tag breakdown, studio/magazine stats, filters) live in `src/lib/analytics/` and are rendered with Recharts.
+
+## Adaptation gap
+
+The Adaptation Gap panel pairs manga and anime that share an adaptation link and compares their MAL community scores (paired bars or delta scatter). Pairing uses:
+
+1. Cross-medium relations from MAL, then Jikan `/relations` when MAL returns none (MAL’s `related_manga` on anime / `related_anime` on manga is often empty — a known API bug).
+2. Normalized title matching across the user’s anime and manga lists, so Combined mode still works without cross-medium relation data.
+
+Both sides must be on the user’s lists (with community scores). Anime/Manga modes keep the opposite medium available as counterparts; Combined requires both sides to pass the chart filters.
 
 ## Known upstream quirks
 
